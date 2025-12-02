@@ -1,26 +1,43 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
-_Bool processLine(char * line, int * currentValue) {
+void processLine(char * line, int * currentValue, int * becameZeroAtEndCount, int * becameZeroMidwayCount) {
   if (strlen(line) == 0) {
     printf("Unexpected line with 0 length.\n");
-    return 0;
+    return;
   }
 
   int num = atoi(&line[1]);
-
+  int higherNumber, lowerNumber, finalNumber;
   if (line[0] == 'R') {
-    *currentValue = (*currentValue + num) % 100;
+    higherNumber = *currentValue + num;
+    lowerNumber = *currentValue;
+    finalNumber = *currentValue + num;
   } else if (line[0] == 'L') {
-    *currentValue = (((*currentValue - num) % 100) + 100) % 100;
+    higherNumber = *currentValue;
+    lowerNumber = *currentValue - num;
+    finalNumber = *currentValue - num;
   }
+
+  // count number of multiple of 100s in between (low, high)
+  int roundedDown = ((higherNumber) / 100) * 100;
+  int roundedUp = ((lowerNumber - 1 + 100) / 100) * 100;
+  if (lowerNumber < 0) {
+    roundedUp = ((-lowerNumber) / 100) * -100;
+  }
+  if (roundedDown - roundedUp >= 0) {
+    (*becameZeroMidwayCount) += (roundedDown - roundedUp) / 100 + 1;
+  }
+  printf("Between %d and %d (towards %d), %d happened\n", lowerNumber, higherNumber, finalNumber, (roundedDown - roundedUp) / 100 + 1);
+  *currentValue = ((finalNumber % 100) + 100) % 100;
 
   if (*currentValue == 0) {
-    return 1;
+    (*becameZeroAtEndCount)++;
   }
 
-  return 0;
+  return;
 }
 
 
@@ -35,13 +52,12 @@ int main() {
   char lineBuffer[64] = {0};
   int writeIndex = 0;
   int becameZeroCount = 0;
+  int becameZeroMidwayCount = 0;
   char c;
   while ((c = fgetc(f)) && c != EOF) {
     if (c == '\n') {
       lineBuffer[writeIndex] = 0;
-      if (processLine(lineBuffer, &currentValue)) {
-        becameZeroCount++;
-      };
+      processLine(lineBuffer, &currentValue, &becameZeroCount, &becameZeroMidwayCount);
 
       // reset line buffer
       memset(lineBuffer, 0, sizeof(lineBuffer) / sizeof(char));
@@ -55,4 +71,5 @@ int main() {
   }
 
   printf("Became zero %d times\n", becameZeroCount);
+  printf("Became zero %d times incl. midway\n", becameZeroMidwayCount - becameZeroCount);
 }
