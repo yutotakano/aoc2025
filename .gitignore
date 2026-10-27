@@ -2,3 +2,4 @@
 *.obj
 *.txt
 .vscode
+*.out
