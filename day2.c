@@ -5,7 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-void parseRange(char *rangeBuffer, uint64_t *smallValue, uint64_t *largeValue) {
+void parse_range(char *rangeBuffer, uint64_t *smallValue,
+                 uint64_t *largeValue) {
   char *token = strtok(rangeBuffer, "-");
   assert(token != NULL);
   *smallValue = strtoull(token, NULL, 10);
@@ -89,7 +90,7 @@ int main() {
   while ((c = fgetc(f)) && c != EOF) {
     if (c == ',') {
       rangeBuffer[writeIndex] = 0;
-      parseRange(rangeBuffer, &smallValue, &largeValue);
+      parse_range(rangeBuffer, &smallValue, &largeValue);
       invalid_id_sum += sumInvalidIdsInRange(smallValue, largeValue);
       more_invalid_id_sum += sumMoreInvalidIdsInRange(smallValue, largeValue);
 
@@ -106,7 +107,7 @@ int main() {
 
   // final parse
   rangeBuffer[writeIndex] = 0;
-  parseRange(rangeBuffer, &smallValue, &largeValue);
+  parse_range(rangeBuffer, &smallValue, &largeValue);
   invalid_id_sum += sumInvalidIdsInRange(smallValue, largeValue);
   more_invalid_id_sum += sumMoreInvalidIdsInRange(smallValue, largeValue);
 
