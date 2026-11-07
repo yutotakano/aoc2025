@@ -4,21 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-void parse_range(char *rangeBuffer, uint64_t *smallValue,
-                 uint64_t *largeValue) {
-  char *token = strtok(rangeBuffer, "-");
-  assert(token != NULL);
-  *smallValue = strtoull(token, NULL, 10);
-
-  token = strtok(NULL, "-");
-  assert(token != NULL);
-  *largeValue = strtoull(token, NULL, 10);
-}
-
-void parse_ingredient_index(char *lineBuffer, uint64_t *ingredient_index) {
-  *ingredient_index = strtoull(lineBuffer, NULL, 10);
-}
-
 int main() {
   FILE *f;
   if ((f = fopen("day6.txt", "r")) == NULL) {
